@@ -35,14 +35,14 @@ def shutdown_check():
             time.sleep(0.01)
             pulsetime += 1
         if pulsetime >= 2 and pulsetime <= 3:
-            run("reboot")
+            run('reboot')
         elif pulsetime >= 4 and pulsetime <= 5:
-            run("shutdown now -h")
+            run('shutdown now -h')
 
 
 def get_fanspeed(tempval, configlist):
     for curconfig in configlist:
-        curpair = curconfig.split("=")
+        curpair = curconfig.split('=')
         tempcfg = float(curpair[0])
         fancfg = int(float(curpair[1]))
         if tempval >= tempcfg:
@@ -53,17 +53,16 @@ def get_fanspeed(tempval, configlist):
 def load_config(fname):
     newconfig = []
     try:
-        with open(fname, "r") as fp:
+        with open(fname, 'r') as fp:
             for curline in fp:
                 if not curline:
                     continue
                 tmpline = curline.strip()
                 if not tmpline:
                     continue
-                # FIXME: Use startswith here
-                if tmpline[0] == "#":
+                if tmpline.startswith('#'):
                     continue
-                tmppair = tmpline.split("=")
+                tmppair = tmpline.split('=')
                 if len(tmppair) != 2:
                     continue
                 tempval = 0
@@ -80,7 +79,7 @@ def load_config(fname):
                         continue
                 except:
                     continue
-                newconfig.append("{:5.1f}={}".format(tempval, fanval))
+                newconfig.append('{:5.1f}={}'.format(tempval, fanval))
         if len(newconfig) > 0:
             newconfig.sort(reverse=True)
     except:
@@ -89,16 +88,16 @@ def load_config(fname):
 
 
 def temp_check():
-    fanconfig = ["65=100", "60=55", "55=10"]
-    tmpconfig = load_config("/etc/argononed.conf")
+    fanconfig = ['65=100', '60=55', '55=10']
+    tmpconfig = load_config('/etc/argononed.conf')
     if len(tmpconfig) > 0:
         fanconfig = tmpconfig
     address = 0x1A
     prevblock = 0
     while True:
-        with open("/sys/class/thermal/thermal_zone0/temp", "r") as fp:
+        with open('/sys/class/thermal/thermal_zone0/temp', 'r') as fp:
             temp = fp.read()
-        val = float(int(temp)/1000)
+        val = float(int(temp) / 1000)
         block = get_fanspeed(val, fanconfig)
         if block < prevblock:
             time.sleep(30)
@@ -106,7 +105,7 @@ def temp_check():
         try:
             bus.write_byte(address, block)
         except IOError:
-            temp = ""
+            temp = ''
         time.sleep(30)
 
 
