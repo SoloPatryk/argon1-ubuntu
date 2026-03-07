@@ -33,30 +33,23 @@ function install_argonone() {
 	apt install -y python3-rpi.gpio python3-smbus i2c-tools
 
 	if [[ ! -f "${daemonConfigFile}" ]]; then
-		# Generate config file for fan speed
-		cat "${sourceFilesDir}/${daemonConfigFileFilename}" >"${daemonConfigFile}"
-
-		chmod 644 "${daemonConfigFile}"
+		# Create config file for fan speed
+		install -Dm644 "${sourceFilesDir}/${daemonConfigFileFilename}" "${daemonConfigFile}"
 	fi
 
-	# Generate script that runs every shutdown event
-	cat "${sourceFilesDir}/${shutdownScriptFilename}" >"${shutdownScript}"
+	# Install script that runs every shutdown event
+	install -Dm755 "${sourceFilesDir}/${shutdownScriptFilename}" "${shutdownScript}"
 
-	chmod 755 "${shutdownScript}"
-
-	# Generate script to monitor shutdown button
-	cat "${sourceFilesDir}/${powerButtonScriptFilename}" >"${powerButtonScript}"
-
-	chmod 755 "${powerButtonScript}"
+	# Install script to monitor shutdown button
+	install -Dm755 "${sourceFilesDir}/${powerButtonScriptFilename}" "${powerButtonScript}"
 
 	# Stop the service if it is already present.
 	if [[ -f "${daemonFanService}" ]]; then
 		systemctl stop ${daemonName}.service
 	fi
 
-	cat "${sourceFilesDir}/${daemonFanServiceFilename}" >"${daemonFanService}"
-
-	chmod 644 "${daemonFanService}"
+	# Create daemon service, running argononed
+	install -Dm644 "${sourceFilesDir}/${daemonFanServiceFilename}" "${daemonFanService}"
 
 	systemctl daemon-reload
 	systemctl enable ${daemonName}.service
