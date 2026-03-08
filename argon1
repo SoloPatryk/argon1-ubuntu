@@ -28,8 +28,11 @@ config_argonone() {
 	fi
 	echo
 	echo "Edit ${daemonConfigFile} to change your fan curve and then run"
-	echo "sudo systemctl restart $daemonName to activate the changes."
-	# TODO: Show openrc syntax when user is using alpine
+	if [ $ID = "ubuntu" ]; then
+		echo "sudo systemctl restart $daemonName to activate the changes."
+	elif [ $ID = "alpine" ]; then
+		echo "doas rc-service $daemonName restart to activate the changes."
+	fi
 }
 
 install_argonone() {
