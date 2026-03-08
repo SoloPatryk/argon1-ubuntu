@@ -36,7 +36,7 @@ config_argonone() {
 }
 
 install_argonone() {
-echo "Installing dependencies ..."
+	echo "Installing dependencies ..."
 	if [ $ID = "ubuntu" ]; then
 		apt install -y python3-rpi.gpio python3-smbus i2c-tools
 	elif [ $ID = "alpine" ]; then
@@ -155,7 +155,7 @@ if [ ! $ID = "ubuntu" ] && [ ! $ID = "alpine" ]; then
 fi
 
 daemonName="argononed"
-sourceFilesDir="files"
+sourceFilesDir="$(dirname "$0")/files"
 powerButtonScriptFilename="${daemonName}"
 powerButtonScript="/usr/local/bin/${powerButtonScriptFilename}"
 shutdownScriptFilename="${daemonName}-poweroff"
